@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.acme</groupId>
 	<artifactId>mars-rover</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 	<name>mars-rover</name>
 
 	<description>Mars Rover Images Project</description>
@@ -76,7 +76,11 @@
 					<finalName>mars-rover-app</finalName>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M4</version>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>

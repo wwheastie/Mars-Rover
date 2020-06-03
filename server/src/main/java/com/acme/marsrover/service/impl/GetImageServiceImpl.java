@@ -34,16 +34,16 @@ public class GetImageServiceImpl extends BaseService implements GetImageService 
         logger.info("Entering getDateImageUrlMap()");
 
         //Get scanner for dates text file
-        Scanner scanner = fileReaderService.getScannerForDatesTextFile();
+        List<String> dates = fileReaderService.getDatesFromTextFile();
 
         //Create response object
         GetImageMapResponse response = new GetImageMapResponse();
         response.setDateImageUrlMap(new HashMap<>());
 
         //Loop through dates text file
-        while (scanner.hasNextLine()) {
+        for(String date : dates) {
             //Convert date string to DateTime object
-            DateTime dateTime = dateConversionService.convertDateStringToDateTime(scanner.nextLine());
+            DateTime dateTime = dateConversionService.convertDateStringToDateTime(date);
 
             //Query database with date if date is not null
             if(dateTime != null) {

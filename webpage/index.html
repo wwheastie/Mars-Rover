@@ -1,21 +1,21 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 function processDates() {
-	$.getJSON('http://localhost:8021/marsrover/process/dates', function (data) {
+	$.getJSON('http://localhost:8080/marsrover/process/dates', function (data) {
 
 	});
 	alert("Process dates method was called");
 }
 
 function clearDatabase() {
-	$.getJSON('http://localhost:8021/marsrover/delete/images', function (data) {
+	$.getJSON('http://localhost:8080/marsrover/delete/images', function (data) {
 	
 	});
 	alert("Clear image table method was called");
 }
 
 function getJSONData() {
-	$.getJSON('http://localhost:8021/marsrover/get/map', function (data) {
+	$.getJSON('http://localhost:8080/marsrover/get/map', function (data) {
 		console.log(data);
 		var map = data.dateImageUrlMap;
 		for (var key in map) {

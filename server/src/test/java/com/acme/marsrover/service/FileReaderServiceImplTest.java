@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.List;
 import java.util.Scanner;
 
 import static org.junit.Assert.assertNotNull;
@@ -42,6 +43,12 @@ public class FileReaderServiceImplTest {
     public void testDatesTextFileExists() throws FileNotFoundException {
         File file = ResourceUtils.getFile("classpath:dates.txt");
         assertNotNull(file);
+    }
+
+    @Test
+    public void testDatesAsListOfStrings() {
+        List<String> dates = fileReaderService.getDatesFromTextFile();
+        assertNotNull(dates);
     }
 
     @Test

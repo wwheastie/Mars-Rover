@@ -1,4 +1,4 @@
-create table image
+create table if not exists image
 (
     photoid integer not null,
     imageblob longblob,

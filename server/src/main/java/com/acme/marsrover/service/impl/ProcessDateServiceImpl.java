@@ -1,7 +1,7 @@
 package com.acme.marsrover.service.impl;
 
-import com.acme.marsrover.model.NasaApiPhotoDetail;
 import com.acme.marsrover.dto.NasaApiPhotosResponse;
+import com.acme.marsrover.model.NasaApiPhotoDetail;
 import com.acme.marsrover.persistence.entity.ImageEntity;
 import com.acme.marsrover.persistence.repository.ImageRepository;
 import com.acme.marsrover.service.AsyncDownloadService;
@@ -19,11 +19,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.sql.rowset.serial.SerialBlob;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @Service
@@ -86,12 +84,13 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
     public void process() {
         logger.info("Entering process()");
         //Create scanner for dates text file
-        Scanner scanner = fileReaderService.getScannerForDatesTextFile();
+        //Scanner scanner = fileReaderService.getScannerForDatesTextFile();
+        List<String> dates = fileReaderService.getDatesFromTextFile();
 
         //Process each date (get images from Nasa API, download images,
         //save into database, and add to map
-        while(scanner.hasNextLine()) {
-            processDate(scanner.nextLine());
+        for(String date : dates) {
+            processDate(date);
         }
         logger.info("Exiting process()");
     }

@@ -6,9 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @Service
@@ -21,6 +22,7 @@ public class FileReaderServiceImpl extends BaseService implements FileReaderServ
     public Scanner getScannerForDatesTextFile() {
         //Get dates text file
         File file;
+
         try {
             file = ResourceUtils.getFile("classpath:dates.txt");
         } catch (FileNotFoundException e) {
@@ -30,6 +32,41 @@ public class FileReaderServiceImpl extends BaseService implements FileReaderServ
 
         //Create new scanner for dates text file
         return getScanner(file);
+    }
+
+    /**
+     * Retrieves dates as a list of Strings from dates.txt file using it as an input stream
+     *
+     * @return
+     */
+    public List<String> getDatesFromTextFile() {
+        //Get dates file as an input stream
+        InputStream inputStream = getDatesTextFileInputStream();
+
+        //Return list of dates
+        return writeInputStreamToStringList(inputStream);
+    }
+
+    /**
+     * Returns a list of strings reading from an input stream
+     *
+     * @param inputStream
+     * @return
+     */
+    private List<String> writeInputStreamToStringList(InputStream inputStream) {
+        List<String> listOfStrings = new ArrayList<>();
+        try {
+            InputStreamReader isReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(isReader);
+            String string;
+            while ((string = bufferedReader.readLine()) != null) {
+                listOfStrings.add(string);
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Error while converting input stream to list of strings", e);
+        }
+        return listOfStrings;
     }
 
     /**
@@ -136,5 +173,17 @@ public class FileReaderServiceImpl extends BaseService implements FileReaderServ
         String filePath = getClass().getClassLoader().getResource(datesFileName).toString();
         logger.info("File path retrieved successfully: " + filePath);
         return filePath;
+    }
+
+    /**
+     * Reads the dates text file as an input stream
+     *
+     * @return
+     */
+    private InputStream getDatesTextFileInputStream() {
+        logger.info("Getting input stream of dates text file");
+        InputStream inputStream = FileReaderServiceImpl.class.getClassLoader().getResourceAsStream("dates.txt");
+        logger.info("Input stream retrieved");
+        return inputStream;
     }
 }
