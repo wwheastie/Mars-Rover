@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.*;
@@ -180,13 +181,20 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
         CompletableFuture<ImageEntity> fImageEntity;
         try {
                 fImageEntity = asyncDownloadService.download(photoDetail.getImgSrc())
-                    .thenApplyAsync(imageBlob -> {
-                ImageEntity imageEntity;
-                String url = createImageUrl(photoDetail.getPhotoId());
-                imageEntity = new ImageEntity(photoDetail.getPhotoId(),
-                        imageBlob, photoDetail.getImgSrc(), url, dateTime.toDate(),
-                        imageBlob.length);
-                imageUrls.add(url);
+                    .thenApplyAsync(imageBytes -> {
+                        ImageEntity imageEntity;
+                        try {
+                            SerialBlob imageBlob = new SerialBlob(imageBytes);
+                            String url = createImageUrl(photoDetail.getPhotoId());
+                            imageEntity = new ImageEntity(photoDetail.getPhotoId(),
+                                    imageBlob, photoDetail.getImgSrc(), url, dateTime.toDate(),
+                                    imageBytes.length);
+                            imageUrls.add(url);
+                        } catch (Exception e) {
+                            logger.error("Error converting bytes to blob");
+                            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                                    "Error converting bytes to blob", e);
+                        }
                 return imageEntity;
             });
         } catch (Exception e) {

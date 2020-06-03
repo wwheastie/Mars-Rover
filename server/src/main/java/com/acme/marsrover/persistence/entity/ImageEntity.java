@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.sql.Blob;
 import java.util.Date;
 
 @Entity
@@ -18,7 +19,7 @@ public class ImageEntity {
     private Integer photoId;
 
     @Column(name = "imageblob", nullable = false)
-    private byte[] imageblob;
+    private Blob imageblob;
 
     @Column(name = "nasaurl", unique = true, nullable = false)
     private String nasaurl;
