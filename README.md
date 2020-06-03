@@ -25,40 +25,40 @@ In order to use this application, you'll need to use my default configurations o
 
 ## Web Service Details
 ### Process Dates Text File Webservice
-URL: {hostname}/marsrover/process/images
-Method: GET
-Request Body: None
-Request Parameters: None
-Path Variable: None
-Return: Map<String, String>
-Description: Calls the process dates text file manually
+URL: {hostname}/marsrover/process/images  
+Method: GET  
+Request Body: None  
+Request Parameters: None  
+Path Variable: None  
+Return: Map<String, String>  
+Description: Calls the process dates text file manually  
 
 ### Get Dates / Image URL Map Webservice
-URL: {hostname}/marsrover/get/map
-Method: GET
-Request Body: None
-Request Parameters: None
-Path Variable: None
-Return: Map<Date, List<String>>
-Description: Returns a map with all image URLs for all dates in database
+URL: {hostname}/marsrover/get/map   
+Method: GET  
+Request Body: None  
+Request Parameters: None  
+Path Variable: None  
+Return: Map<Date, List<String>>  
+Description: Returns a map with all image URLs for all dates in database  
   
 ### Get Image Webservice
-URL: {hostname}/marsrover/get/image/{photoId}
-Method: GET
-Request Body: None
-Request Parameters: None
-Path Variable: photoId
-Return: JPEG Image
-Description: Returns JPEG image given for given photo id
+URL: {hostname}/marsrover/get/image/{photoId}  
+Method: GET  
+Request Body: None  
+Request Parameters: None  
+Path Variable: photoId  
+Return: JPEG Image  
+Description: Returns JPEG image given for given photo id  
 
 ### Clear Image Table
-URL: {hostname}/marsrover/delete/images
-Method: GET
-Request Body: None
-Request Parameters: None
-Path Variable: photoId
-Return: Map<String, String>
-Description: Deletes all records in Image table
+URL: {hostname}/marsrover/delete/images  
+Method: GET  
+Request Body: None  
+Request Parameters: None  
+Path Variable: photoId  
+Return: Map<String, String>  
+Description: Deletes all records in Image table  
 
 ## Improvments & Notes
 * I created a very simple html file just to demonstrate the ability to retrieve images my from web service.
