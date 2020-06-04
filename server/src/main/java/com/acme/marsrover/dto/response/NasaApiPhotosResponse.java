@@ -1,15 +1,15 @@
-package com.acme.marsrover.dto;
+package com.acme.marsrover.dto.response;
 
-import com.acme.marsrover.model.NasaApiPhotoDetail;
+import com.acme.marsrover.dto.NasaPhotoDetail;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.List;
 
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class NasaApiPhotosResponse {
     @JsonProperty("photos")
-    private List<NasaApiPhotoDetail> photos;
+    private List<NasaPhotoDetail> photos;
 }

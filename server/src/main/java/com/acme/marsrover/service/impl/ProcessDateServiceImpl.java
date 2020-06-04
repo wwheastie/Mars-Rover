@@ -1,7 +1,7 @@
 package com.acme.marsrover.service.impl;
 
-import com.acme.marsrover.dto.NasaApiPhotosResponse;
-import com.acme.marsrover.model.NasaApiPhotoDetail;
+import com.acme.marsrover.dto.response.NasaApiPhotosResponse;
+import com.acme.marsrover.dto.NasaPhotoDetail;
 import com.acme.marsrover.persistence.entity.ImageEntity;
 import com.acme.marsrover.persistence.repository.ImageRepository;
 import com.acme.marsrover.service.AsyncDownloadService;
@@ -136,17 +136,17 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      * Processes a list of images by calling the processImage() method and
      * adds them to a list to be returned
      *
-     * @param nasaApiPhotoDetails
+     * @param nasaPhotoDetails
      * @param imageUrls
      * @param dateTime
      * @return
      */
-    private CompletableFuture<List<ImageEntity>> processImages(List<NasaApiPhotoDetail> nasaApiPhotoDetails,
+    private CompletableFuture<List<ImageEntity>> processImages(List<NasaPhotoDetail> nasaPhotoDetails,
                                                                List<String> imageUrls,
                                                                DateTime dateTime) {
         //Create list of completeable futures
         List<CompletableFuture<ImageEntity>> completableFutureList;
-        completableFutureList = nasaApiPhotoDetails.stream()
+        completableFutureList = nasaPhotoDetails.stream()
                 .map(photoDetail -> processImage(photoDetail, imageUrls, dateTime))
                 .collect(Collectors.toList());
 
@@ -174,9 +174,9 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      * @param dateTime
      * @return
      */
-    private CompletableFuture<ImageEntity> processImage(NasaApiPhotoDetail photoDetail,
-                                                               List<String> imageUrls,
-                                                               DateTime dateTime) {
+    private CompletableFuture<ImageEntity> processImage(NasaPhotoDetail photoDetail,
+                                                        List<String> imageUrls,
+                                                        DateTime dateTime) {
         CompletableFuture<ImageEntity> fImageEntity;
         try {
                 fImageEntity = asyncDownloadService.download(photoDetail.getImgSrc())
@@ -223,7 +223,7 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      * @param sDate
      * @return
      */
-    private CompletableFuture<List<NasaApiPhotoDetail>> callApiForMarsRoverPhotos(String sDate) {
+    private CompletableFuture<List<NasaPhotoDetail>> callApiForMarsRoverPhotos(String sDate) {
         String url = nasaMarsRoverPhotosUrl + "?earth_date=" + sDate + "&api_key=" + nasaApiKey;
         logger.info("Calling API to retrieve photo details for date " + sDate);
         NasaApiPhotosResponse response = restTemplate.getForObject(url, NasaApiPhotosResponse.class);

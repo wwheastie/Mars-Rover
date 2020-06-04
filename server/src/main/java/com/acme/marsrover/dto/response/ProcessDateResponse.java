@@ -1,4 +1,4 @@
-package com.acme.marsrover.dto;
+package com.acme.marsrover.dto.response;
 
 import lombok.Data;
 
@@ -7,6 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class GetImageMapResponse {
+public class ProcessDateResponse {
     private Map<Date, List<String>> dateImageUrlMap;
 }

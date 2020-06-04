@@ -1,21 +1,14 @@
 package com.acme.marsrover.service;
 
 
-import com.acme.marsrover.dto.NasaApiPhotosResponse;
-import com.acme.marsrover.persistence.entity.ImageEntity;
-import com.acme.marsrover.persistence.repository.ImageRepository;
-import org.joda.time.DateTime;
+import com.acme.marsrover.dto.response.NasaApiPhotosResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 

@@ -1,6 +1,6 @@
 package com.acme.marsrover.service;
 
-import com.acme.marsrover.dto.GetImageMapResponse;
+import com.acme.marsrover.dto.response.GetImageMapResponse;
 
 public interface GetImageService {
     GetImageMapResponse getDateImageUrlMap();

@@ -1,6 +1,6 @@
 package com.acme.marsrover.service.impl;
 
-import com.acme.marsrover.dto.GetImageMapResponse;
+import com.acme.marsrover.dto.response.GetImageMapResponse;
 import com.acme.marsrover.persistence.repository.ImageRepository;
 import com.acme.marsrover.service.DateConversionService;
 import com.acme.marsrover.service.FileReaderService;

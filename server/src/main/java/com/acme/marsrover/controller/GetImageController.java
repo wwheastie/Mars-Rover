@@ -1,16 +1,11 @@
 package com.acme.marsrover.controller;
 
-import com.acme.marsrover.dto.GetImageMapResponse;
+import com.acme.marsrover.dto.response.GetImageMapResponse;
 import com.acme.marsrover.service.GetImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.*;
 
 @RestController
 public class GetImageController {
