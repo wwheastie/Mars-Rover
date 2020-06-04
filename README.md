@@ -1,5 +1,8 @@
 # Mars-Rover
-Coding exercise to download images from NASA's API and store them locally. This project uses Java, Spring Boot, JPA/Hibernate, Asynchronous Programming, Maven, JUnit, MySQL, and RESTful Services
+Coding exercise to download images from NASA's API and store them locally. This project uses Java, Spring Boot, JPA/Hibernate, Asynchronous Programming, Maven, JUnit, H2, and RESTful Services
+
+## How to Use
+This application can be ran in Spring Boot, executed as a jar file, or deployed on docker container. There is a folder called webpage that conatins a basic html file that can be used to see images retireve, process dates again, or clear Image Detail table (NOTE: in order for the web page to work, the application will have to run on port 8080).
 
 ## How it Works
 This application processes dates provided in a text file. Those dates will be used to call NASA's API to retrieve photo details for that date.
@@ -11,17 +14,13 @@ The process works in this order:
 3) After image details are retrieved, process each image by using each image's URL to download the image, create local URL, and put into list to be saved
 4) After all images for the date, the images are saved to the database
 
-This process is executed automatically after Spring initialization. This process can also be called manually via web service.
+This process is executed automatically after Spring initialization. This process can also be called manually via web service (see below for web services details).
 
-## How to Use
-There is a scripts folder with a sql script used in this project. I used a MySQL docker container and ran my scripts on there.
-There is a folder called webpage that conatins a basic html file that can be used to see images retireve, process dates again, or clear Image table (note: if you change any of your configurations, the host and port will need to be updated in this html file as well).
-
-In order to use this application, you'll need to use my default configurations or change them for the following in application.properties:
-1) Database Configurations
-2) server.port=8021
-3) domain.url=http://localhost (used for creating image urls)
-4) nasa.api.key=YOUR_NASA_API_KEY
+## Known Bugs / Improvments / Notes
+* I created a very simple html file just to demonstrate the ability to retrieve images my from web service.
+* There is a small bug that happens about 15% of the time where images will download but fail somewhere along saving to the database.
+* With a more complex front end, I could give an id or some indication the user could refer to check if dates have been processed.
+* Based on requirements and end-user usage, I would change the way this web service works. Currently, this web service automatically calls the read dates process once, requiring user interaction for following calls. This could be configured to consistantly run every X amount of time in the background.
 
 ## Web Service Details
 ### Process Dates Text File Webservice
@@ -59,8 +58,3 @@ Request Parameters: None
 Path Variable: photoId  
 Return: Map<String, String>  
 Description: Deletes all records in Image table  
-
-## Improvments & Notes
-* I created a very simple html file just to demonstrate the ability to retrieve images my from web service.
-* With a more complex front end, I could give an id or some indication the user could refer to check if dates have been processed.
-* Based on requirements and end-user usage, I would change the way this web service works. Currently, this web service automatically calls the read dates process once, requiring user interaction for following calls. This could be configured to consistantly run every X amount of time in the background.
