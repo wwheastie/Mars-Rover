@@ -1,9 +1,9 @@
 package com.acme.marsrover.service.impl;
 
 import com.acme.marsrover.dto.response.NasaApiPhotosResponse;
-import com.acme.marsrover.dto.NasaPhotoDetail;
-import com.acme.marsrover.persistence.entity.ImageEntity;
-import com.acme.marsrover.persistence.repository.ImageRepository;
+import com.acme.marsrover.persistence.entity.CameraEntity;
+import com.acme.marsrover.persistence.entity.ImageDetailEntity;
+import com.acme.marsrover.persistence.repository.ImageDetailRepository;
 import com.acme.marsrover.service.AsyncDownloadService;
 import com.acme.marsrover.service.DateConversionService;
 import com.acme.marsrover.service.FileReaderService;
@@ -25,9 +25,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
-public class ProcessDateServiceImpl extends BaseService implements ProcessDateService {
+public class ProcessDataServiceImpl extends BaseService implements ProcessDateService {
     @Autowired
-    private ImageRepository imageRepository;
+    private ImageDetailRepository imageDetailRepository;
 
     @Autowired
     private AsyncDownloadService asyncDownloadService;
@@ -118,9 +118,9 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
             if(imageUrls == null || imageUrls.isEmpty()) {
                 callApiForMarsRoverPhotos(dateTime.toString(nasaDateFormat))
                         .thenApplyAsync(nasaApiPhotoDetails -> {
-                            processImages(nasaApiPhotoDetails, imageUrls, dateTime)
+                            processImages(nasaApiPhotoDetails, dateTime)
                                     .thenApplyAsync(imageEntities -> {
-                                        imageRepository.saveAll(imageEntities);
+                                        imageDetailRepository.saveAll(imageEntities);
                                         return null;
                                     });
                             return null;
@@ -137,17 +137,15 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      * adds them to a list to be returned
      *
      * @param nasaPhotoDetails
-     * @param imageUrls
      * @param dateTime
      * @return
      */
-    private CompletableFuture<List<ImageEntity>> processImages(List<NasaPhotoDetail> nasaPhotoDetails,
-                                                               List<String> imageUrls,
-                                                               DateTime dateTime) {
+    private CompletableFuture<List<ImageDetailEntity>> processImages(List<ImageDetailEntity> nasaPhotoDetails,
+                                                                     DateTime dateTime) {
         //Create list of completeable futures
-        List<CompletableFuture<ImageEntity>> completableFutureList;
+        List<CompletableFuture<ImageDetailEntity>> completableFutureList;
         completableFutureList = nasaPhotoDetails.stream()
-                .map(photoDetail -> processImage(photoDetail, imageUrls, dateTime))
+                .map(imageDetail -> processImage(imageDetail, dateTime))
                 .collect(Collectors.toList());
 
 
@@ -155,7 +153,7 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
         CompletableFuture<Void> allFutures = CompletableFuture
                 .allOf(completableFutureList.toArray(new CompletableFuture[completableFutureList.size()]));
 
-        CompletableFuture<List<ImageEntity>> allCompleteableFuture =
+        CompletableFuture<List<ImageDetailEntity>> allCompleteableFuture =
                 allFutures.thenApply(future -> completableFutureList.stream()
                            .map(completeFutures -> completeFutures.join())
                            .collect(Collectors.toList())
@@ -169,32 +167,35 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      * Processes a single image by downloading the image, creating url for image,
      * and then adding it to a String list of image urls
      *
-     * @param photoDetail
-     * @param imageUrls
+     * @param imageDetail
      * @param dateTime
      * @return
      */
-    private CompletableFuture<ImageEntity> processImage(NasaPhotoDetail photoDetail,
-                                                        List<String> imageUrls,
-                                                        DateTime dateTime) {
-        CompletableFuture<ImageEntity> fImageEntity;
+    private CompletableFuture<ImageDetailEntity> processImage(ImageDetailEntity imageDetail,
+                                                              DateTime dateTime) {
+        CompletableFuture<ImageDetailEntity> fImageEntity;
         try {
-                fImageEntity = asyncDownloadService.download(photoDetail.getImgSrc())
+                fImageEntity = asyncDownloadService.download(imageDetail.getNasaUrl())
                     .thenApplyAsync(imageBytes -> {
-                        ImageEntity imageEntity;
                         try {
                             SerialBlob imageBlob = new SerialBlob(imageBytes);
-                            String url = createImageUrl(photoDetail.getPhotoId());
-                            imageEntity = new ImageEntity(photoDetail.getPhotoId(),
-                                    imageBlob, photoDetail.getImgSrc(), url, dateTime.toDate(),
-                                    imageBytes.length);
-                            imageUrls.add(url);
+                            imageDetail.setImageBlob(imageBlob);
+                            String url = createImageUrl(imageDetail.getId());
+                            imageDetail.setUrl(url);
+                            imageDetail.setSize(imageBytes.length);
+                            CameraEntity cameraEntity = imageDetail.getCamera();
+                            if(imageDetail.getRover() != null
+                                    && cameraEntity.getIntRoverId() != null
+                                    && imageDetail.getRover().getId() == cameraEntity.getIntRoverId()) {
+                                cameraEntity.setRover(imageDetail.getRover());
+                            }
+                            imageDetail.setDate(dateTime.toDate());
                         } catch (Exception e) {
                             logger.error("Error converting bytes to blob");
                             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                                     "Error converting bytes to blob", e);
                         }
-                return imageEntity;
+                return imageDetail;
             });
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
@@ -223,7 +224,7 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      * @param sDate
      * @return
      */
-    private CompletableFuture<List<NasaPhotoDetail>> callApiForMarsRoverPhotos(String sDate) {
+    private CompletableFuture<List<ImageDetailEntity>> callApiForMarsRoverPhotos(String sDate) {
         String url = nasaMarsRoverPhotosUrl + "?earth_date=" + sDate + "&api_key=" + nasaApiKey;
         logger.info("Calling API to retrieve photo details for date " + sDate);
         NasaApiPhotosResponse response = restTemplate.getForObject(url, NasaApiPhotosResponse.class);
@@ -239,7 +240,7 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      */
     private List<String> getImageUrlsByDate(Date date) {
         logger.info("Querying for image urls for the date of " + date.toString());
-        List<String> imageUrls = imageRepository.getImageUrlByDate(date);
+        List<String> imageUrls = imageDetailRepository.getImageUrlByDate(date);
         logger.info("Query found " + imageUrls.size() + " results");
         return imageUrls;
     }
@@ -250,7 +251,22 @@ public class ProcessDateServiceImpl extends BaseService implements ProcessDateSe
      */
     private void deleteAllFromImageTable() {
         logger.info("Deleting all from Image table");
-        imageRepository.deleteAllFromImageTable();
+        imageDetailRepository.deleteAllFromImageTable();
         logger.info("Delete all complete");
+    }
+
+    /**
+     * Saves list of entities to database
+     *
+     * @param imageDetailEntities
+     */
+    private void saveAll(List<ImageDetailEntity> imageDetailEntities) {
+        try {
+            logger.info("Saving entity list of size " + imageDetailEntities.size());
+            imageDetailRepository.saveAll(imageDetailEntities);
+            logger.info("Save successful");
+        } catch (Exception e) {
+            logger.info("Error saving to database", e);
+        }
     }
 }

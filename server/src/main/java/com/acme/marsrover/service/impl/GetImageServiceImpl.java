@@ -1,7 +1,7 @@
 package com.acme.marsrover.service.impl;
 
 import com.acme.marsrover.dto.response.GetImageMapResponse;
-import com.acme.marsrover.persistence.repository.ImageRepository;
+import com.acme.marsrover.persistence.repository.ImageDetailRepository;
 import com.acme.marsrover.service.DateConversionService;
 import com.acme.marsrover.service.FileReaderService;
 import com.acme.marsrover.service.GetImageService;
@@ -14,7 +14,7 @@ import java.util.*;
 @Service
 public class GetImageServiceImpl extends BaseService implements GetImageService {
     @Autowired
-    private ImageRepository imageRepository;
+    private ImageDetailRepository imageDetailRepository;
 
     @Autowired
     private FileReaderService fileReaderService;
@@ -77,7 +77,7 @@ public class GetImageServiceImpl extends BaseService implements GetImageService 
      */
     private List<String> getImageUrlsByDate(Date date) {
         logger.info("Querying for image urls for the date of " + date.toString());
-        List<String> imageUrls = imageRepository.getImageUrlByDate(date);
+        List<String> imageUrls = imageDetailRepository.getImageUrlByDate(date);
         logger.info("Query found " + imageUrls.size() + " results");
         return imageUrls;
     }
@@ -90,7 +90,7 @@ public class GetImageServiceImpl extends BaseService implements GetImageService 
      */
     private byte[] getImageBlobByPhotoId(int photoId) {
         logger.info("Quering for image blob with photoId of " + photoId);
-        byte[] imageBlob = imageRepository.getBlobByPhotoId(photoId);
+        byte[] imageBlob = imageDetailRepository.getBlobByPhotoId(photoId);
         logger.info("Query was successful");
         return imageBlob;
     }
