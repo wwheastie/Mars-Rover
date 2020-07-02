@@ -1,5 +1,5 @@
 # Mars-Rover
-Coding exercise to download images from NASA's API and store them locally. This project uses Java, Spring Boot, JPA/Hibernate, Asynchronous Programming, Maven, JUnit, H2, and RESTful Services
+Coding exercise to download images from NASA's API and store them locally. This project uses Java, Spring Boot, JPA/Hibernate, Asynchronous Programming, Maven, Docker, JUnit, H2, and RESTful Services
 
 ## How to Use
 This application can be ran in Spring Boot, executed as a jar file, or deployed on docker container. There is a folder called webpage that conatins a basic html file that can be used to see images retireve, process dates again, or clear Image Detail table (NOTE: in order for the web page to work, the application will have to run on port 8080).
